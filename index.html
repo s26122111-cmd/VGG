@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEB DEV // PORTFOLIO HUB</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons for additional flair -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Share Tech Mono & VT323 for Y2K/Cyber aesthetics -->
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --neon-pink: #ff007f;
+            --neon-cyan: #00f3ff;
+            --neon-purple: #b026ff;
+            --cyber-dark: #0a0a12;
+            --glass-bg: rgba(18, 18, 30, 0.65);
+            --glass-border: rgba(0, 243, 255, 0.2);
+        }
+
+        body {
+            font-family: 'Share Tech Mono', 'Orbitron', sans-serif, monospace;
+            background-color: var(--cyber-dark);
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Y2K / Cyber Grid Animated Background */
+        .cyber-bg {
+            background-image: 
+                linear-gradient(to right, rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 0, 127, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 40px 40px; }
+        }
+
+        /* Scanline Overlay for retro CRT vibe */
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.25) 50%
+            );
+            background-size: 100% 4px;
+            z-index: 50;
+            opacity: 0.6;
+        }
+
+        /* Glassmorphism Effect */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        /* Unlocked Cyber Mission Button Style */
+        .mission-btn {
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            overflow: hidden;
+        }
+
+        .mission-btn-unlocked {
+            background: rgba(16, 24, 48, 0.7);
+            border: 1px solid rgba(0, 243, 255, 0.4);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
+        }
+
+        .mission-btn-unlocked:hover {
+            transform: translateY(-4px) scale(1.02);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.5), inset 0 0 15px rgba(0, 243, 255, 0.2);
+            color: #ffffff;
+        }
+
+        .mission-btn-unlocked::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.3), transparent);
+            transition: 0.5s;
+        }
+
+        .mission-btn-unlocked:hover::before {
+            left: 100%;
+        }
+
+        /* Locked Mission Button Style */
+        .mission-btn-locked {
+            background: rgba(20, 20, 28, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #666677;
+            cursor: not-allowed;
+            filter: grayscale(80%);
+        }
+
+        .mission-btn-locked:hover {
+            border-color: rgba(255, 0, 127, 0.3);
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
+        }
+
+        /* Cyberpunk Glitch Effect for Title */
+        .glitch-text {
+            text-shadow: 2px 2px var(--neon-pink), -2px -2px var(--neon-cyan);
+        }
+
+        /* Glow effects */
+        .avatar-glow {
+            box-shadow: 0 0 25px var(--neon-cyan), 0 0 50px var(--neon-pink);
+            animation: pulseGlow 3s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 20px rgba(0, 243, 255, 0.6), 0 0 40px rgba(255, 0, 127, 0.4); }
+            100% { box-shadow: 0 0 30px rgba(255, 0, 127, 0.8), 0 0 60px rgba(0, 243, 255, 0.5); }
+        }
+    </style>
+</head>
+<body class="cyber-bg min-h-screen flex flex-col items-center justify-between p-4 sm:p-8 relative">
+
+    <!-- CRT Scanline overlay effect -->
+    <div class="scanlines"></div>
+
+    <!-- Profile Container (Centered Header Section) -->
+    <header class="w-full max-w-4xl mx-auto text-center mt-6 mb-10 z-10">
+        <div class="glass-panel rounded-2xl p-6 sm:p-8 relative overflow-hidden backdrop-blur-md">
+            
+            <!-- Top Cyber Decorative Elements -->
+            <div class="absolute top-2 left-4 text-xs text-cyan-400 tracking-widest opacity-70">
+                [ SYS_STATUS: ONLINE ]
+            </div>
+            <div class="absolute top-2 right-4 text-xs text-pink-500 tracking-widest opacity-70">
+                [ VER: 2026.1.0 ]
+            </div>
+
+            <!-- Avatar Container -->
+            <div class="relative inline-block my-4">
+                <img 
+                    src="https://placehold.co/150x150/101428/00f3ff?text=Y2K+AVATAR" 
+                    alt="Developer Avatar" 
+                    class="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover border-2 border-cyan-400 avatar-glow mx-auto transition-transform duration-300 hover:scale-105"
+                >
+                <div class="absolute bottom-1 right-1 bg-pink-600 text-white text-xs px-2 py-0.5 rounded-full border border-white font-bold animate-pulse">
+                    LV. 01
+                </div>
+            </div>
+
+            <!-- User Info & Bio -->
+            <h1 class="text-3xl sm:text-5xl font-extrabold tracking-wider glitch-text uppercase mb-2">
+                <span class="text-cyan-400">&lt;</span> 你的名字 <span class="text-pink-500">&gt;</span>
+            </h1>
+            <p class="text-sm sm:text-base text-gray-300 tracking-widest max-w-lg mx-auto">
+                網頁程式設計作品集 // WEB DEVELOPMENT QUEST HUB
+            </p>
+
+            <!-- Progress Bar / Mission Level -->
+            <div class="w-full max-w-xs mx-auto mt-6 bg-gray-800 rounded-full h-3 border border-gray-700 overflow-hidden relative">
+                <div class="bg-gradient-to-r from-cyan-400 to-pink-500 h-full rounded-full transition-all duration-500" style="width: 12.5%;"></div>
+                <span class="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-white uppercase tracking-wider">
+                    Quest Progress: 2 / 16 (12.5%)
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Grid Navigation Buttons Section -->
+    <main class="w-full max-w-5xl mx-auto z-10 mb-12">
+        <div class="text-center mb-6">
+            <h2 class="text-lg sm:text-xl font-bold tracking-widest text-cyan-400 uppercase inline-block border-b-2 border-pink-500 pb-1">
+                <i class="fa-solid fa-gamepad mr-2"></i>任務地圖 / SELECT MISSION
+            </h2>
+        </div>
+
+        <!-- 16 Grid Container (Responsive: 1 col on mobile, 2 on tablet, 4 on desktop) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            
+            <!-- Button 1: Unlocked (Week 1) -->
+            <a href="w1/index.html" class="mission-btn mission-btn-unlocked rounded-xl p-4 flex flex-col justify-between group h-32 border">
+                <div class="flex justify-between items-start">
+                    <span class="text-xs font-bold text-cyan-400 tracking-wider">WEEK 01</span>
+                    <span class="bg-cyan-500/20 text-cyan-300 text-[10px] px-2 py-0.5 rounded-full border border-cyan-400/30">
+                        <i class="fa-solid fa-unlock mr-1"></i>已解鎖
+                    </span>
+                </div>
+                <div class="my-auto">
+                    <h3 class="text-base font-bold text-white group-hover:text-cyan-300 transition-colors">
+                        數位名片
+                    </h3>
+                    <p class="text-xs text-gray-400 mt-1">個人簡介與聯絡資訊卡</p>
+                </div>
+                <div class="text-right text-xs text-cyan-400 font-bold group-hover:translate-x-1 transition-transform">
+                    ENTER MISSION <i class="fa-solid fa-arrow-right ml-1"></i>
+                </div>
+            </a>
+
+            <!-- Button 2: Unlocked (Week 2) -->
+            <a href="w2/index.html" class="mission-btn mission-btn-unlocked rounded-xl p-4 flex flex-col justify-between group h-32 border">
+                <div class="flex justify-between items-start">
+                    <span class="text-xs font-bold text-pink-400 tracking-wider">WEEK 02</span>
+                    <span class="bg-pink-500/20 text-pink-300 text-[10px] px-2 py-0.5 rounded-full border border-pink-400/30">
+                        <i class="fa-solid fa-unlock mr-1"></i>已解鎖
+                    </span>
+                </div>
+                <div class="my-auto">
+                    <h3 class="text-base font-bold text-white group-hover:text-pink-300 transition-colors">
+                        今天吃甚麼?
+                    </h3>
+                    <p class="text-xs text-gray-400 mt-1">美食隨機抽籤與選擇器</p>
+                </div>
+                <div class="text-right text-xs text-pink-400 font-bold group-hover:translate-x-1 transition-transform">
+                    ENTER MISSION <i class="fa-solid fa-arrow-right ml-1"></i>
+                </div>
+            </a>
+
+            <!-- Buttons 3 - 16: Locked Missions -->
+            <!-- Script / Template Generated Locked Missions -->
+            <!-- Mission 3 -->
+            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
+                <div class="flex justify-between items-start">
+                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 03</span>
+                    <span class="text-xs">🔒</span>
+                </div>
+                <div class="my-auto">
+                    <h3 class="text-base font-bold text-gray-400">Week 3 - 尚未解鎖</h3>
+                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
+                </div>
+                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
+                    LOCKED MISSION
+                </div>
+            </div>
+
+            <!-- Mission 4 -->
+            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
+                <div class="flex justify-between items-start">
+                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 04</span>
+                    <span class="text-xs">🔒</span>
+                </div>
+                <div class="my-auto">
+                    <h3 class="text-base font-bold text-gray-400">Week 4 - 尚未解鎖</h3>
+                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
+                </div>
+                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
+                    LOCKED MISSION
+                </div>
+            </div>
+
+            <!-- Mission 5 -->
+            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
+                <div class="flex justify-between items-start">
+                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 05</span>
+                    <span class="text-xs">🔒</span>
+                </div>
+                <div class="my-auto">
+                    <h3 class="text-base font-bold text-gray-400">Week 5 - 尚未解鎖</h3>
+                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
+                </div>
+                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
+                    LOCKED MISSION
+                </div>
+            </div>
+
+            <!-- Mission 6 -->
+            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
+                <div class="flex justify-between items-start">
+                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 06</span>
+                    <span class="text-xs">🔒</span>
+                </div>
+                <div class="my-auto">
+                    <h3 class="text-base font-bold text-gray-400">Week 6 - 尚未解鎖</h3>
+                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
+                </div>
+                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
+                    LOCKED MISSION
+                </div>
+            </div>
+
+            <!-- Mission 7 -->
+            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
+                <div class="flex justify-between items-start">
+                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 07</span>
+                    <span class="text-xs">🔒</span>
+                </div>
+                <div class="my-auto">
+                    <h3 class="text-base font-bold text-gray-400">Week 7 - 尚未解鎖</h3>
+                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
+                </div>
+                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
+                    LOCKED MISSION
+                </div>
+            </div>
+
+            <!-- Mission 8 -->
+            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
+                <div class="flex justify-between items-start">
+                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 08</span>
+                    <span class="text-xs">🔒</span>
+                </div>
+                <div class="my-auto">
+                    <h3 class="text-base font-bold text-gray-400">Week 8 - 尚未解鎖</h3>
+                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
+                </div>
+                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
+                    LOCKED MISSION
+                </div>
+            </div>
+
+            <!-- Mission 9 -->
+            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
+                <div class="flex justify-between items-start">
+                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 09</span>
+                    <span class="text-xs">🔒</span>
+                </div>
+                <div class="my-auto">
+                    <h3 class="text-base font-bold text-gray-400">Week 9 - 尚未解鎖</h3>
+                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
+                </div>
+                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
+                    LOCKED MISSION
+                </div>
+            </div>
+
+            <!-- Mission 10 -->
+            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
+                <div class="flex justify-between items-start">
+                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 10</span>
+                    <span class="text-xs">🔒</span>
+                </div>
+                <div class="my-auto">
+                    <h3 class="text-base font-bold text-gray-400">Week 10 - 尚未解鎖</h3>
+                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
+                </div>
+                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
+                    LOCKED MISSION
+                </div>
+            </div>
+
+            <!-- Mission 11 -->
+            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
+                <div class="flex justify-between items-start">
+                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 11</span>
+                    <span class="text-xs">🔒</span>
+                </div>
+                <div class="my-auto">
+                    <h3 class="text-base font-bold text-gray-400">Week 11 - 尚未解鎖</h3>
+                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
+                </div>
+                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
+                    LOCKED MISSION
+                </div>
+            </div>
+
+            <!-- Mission 12 -->
+            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
+                <div class="flex justify-between items-start">
+                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 12</span>
+                    <span class="text-xs">🔒</span>
+                </div>
+                <div class="my-auto">
+                    <h3 class="text-base font-bold text-gray-400">Week 12 - 尚未解鎖</h3>
+                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
+                </div>
+                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
+                    LOCKED MISSION
+                </div>
+            </div>
+
+            <!-- Mission 13 -->
+            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
+                <div class="flex justify-between items-start">
+                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 13</span>
+                    <span class="text-xs">🔒</span>
+                </div>
+                <div class="my-auto">
+                    <h3 class="text-base font-bold text-gray-400">Week 13 - 尚未解鎖</h3>
+                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
+                </div>
+                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
+                    LOCKED MISSION
+                </div>
+            </div>
+
+            <!-- Mission 14 -->
+            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
+                <div class="flex justify-between items-start">
+                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 14</span>
+                    <span class="text-xs">🔒</span>
+                </div>
+                <div class="my-auto">
+                    <h3 class="text-base font-bold text-gray-400">Week 14 - 尚未解鎖</h3>
+                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
+                </div>
+                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
+                    LOCKED MISSION
+                </div>
+            </div>
+
+            <!-- Mission 15 -->
+            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
+                <div class="flex justify-between items-start">
+                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 15</span>
+                    <span class="text-xs">🔒</span>
+                </div>
+                <div class="my-auto">
+                    <h3 class="text-base font-bold text-gray-400">Week 15 - 尚未解鎖</h3>
+                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
+                </div>
+                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
+                    LOCKED MISSION
+                </div>
+            </div>
+
+            <!-- Mission 16 -->
+            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
+                <div class="flex justify-between items-start">
+                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 16</span>
+                    <span class="text-xs">🔒</span>
+                </div>
+                <div class="my-auto">
+                    <h3 class="text-base font-bold text-gray-400">Week 16 - 期末專題</h3>
+                    <p class="text-xs text-gray-600 mt-1">終極關卡鎖定中...</p>
+                </div>
+                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
+                    LOCKED MISSION
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="w-full text-center text-xs text-gray-500 z-10 py-4">
+        <p class="tracking-widest">© 2026 WEB PROGRAMMING COURSE // DESIGNED WITH Y2K CYBER aesthetic</p>
+    </footer>
+
+</body>
+</html>
