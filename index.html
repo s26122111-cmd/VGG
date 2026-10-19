@@ -16,6 +16,7 @@
             --neon-pink: #ff007f;
             --neon-cyan: #00f3ff;
             --neon-purple: #b026ff;
+            --neon-green: #00ff88;
             --cyber-dark: #0a0a12;
             --glass-bg: rgba(18, 18, 30, 0.65);
             --glass-border: rgba(0, 243, 255, 0.2);
@@ -108,6 +109,16 @@
             box-shadow: 0 0 20px rgba(176, 38, 255, 0.5), inset 0 0 15px rgba(176, 38, 255, 0.2);
         }
 
+        /* Mission 4 Specific Green Hover Style */
+        .mission-btn-green {
+            border-color: rgba(0, 255, 136, 0.4);
+        }
+
+        .mission-btn-green:hover {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5), inset 0 0 15px rgba(0, 255, 136, 0.2);
+        }
+
         /* Locked Mission Button Style */
         .mission-btn-locked {
             background: rgba(20, 20, 28, 0.4);
@@ -164,7 +175,7 @@
                     class="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover border-2 border-cyan-400 avatar-glow mx-auto transition-transform duration-300 hover:scale-105"
                 >
                 <div class="absolute bottom-1 right-1 bg-pink-600 text-white text-xs px-2 py-0.5 rounded-full border border-white font-bold animate-pulse">
-                    LV. 03
+                    LV. 04
                 </div>
             </div>
 
@@ -178,9 +189,9 @@
 
             <!-- Progress Bar / Mission Level -->
             <div class="w-full max-w-xs mx-auto mt-6 bg-gray-800 rounded-full h-3 border border-gray-700 overflow-hidden relative">
-                <div class="bg-gradient-to-r from-cyan-400 via-pink-500 to-purple-500 h-full rounded-full transition-all duration-500" style="width: 18.75%;"></div>
+                <div class="bg-gradient-to-r from-cyan-400 via-pink-500 to-purple-500 h-full rounded-full transition-all duration-500" style="width: 25%;"></div>
                 <span class="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-white uppercase tracking-wider">
-                    Quest Progress: 3 / 16 (18.75%)
+                    Quest Progress: 4 / 16 (25.00%)
                 </span>
             </div>
         </div>
@@ -254,20 +265,24 @@
                 </div>
             </a>
 
-            <!-- Mission 4 -->
-            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
+            <!-- Button 4: Unlocked (Week 4) -->
+            <a href="w4/index.html" class="mission-btn mission-btn-unlocked mission-btn-green rounded-xl p-4 flex flex-col justify-between group h-32 border">
                 <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 04</span>
-                    <span class="text-xs">🔒</span>
+                    <span class="text-xs font-bold text-emerald-400 tracking-wider">WEEK 04</span>
+                    <span class="bg-emerald-500/20 text-emerald-300 text-[10px] px-2 py-0.5 rounded-full border border-emerald-400/30">
+                        <i class="fa-solid fa-unlock mr-1"></i>已解鎖
+                    </span>
                 </div>
                 <div class="my-auto">
-                    <h3 class="text-base font-bold text-gray-400">Week 4 - 尚未解鎖</h3>
-                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
+                    <h3 class="text-base font-bold text-white group-hover:text-emerald-300 transition-colors">
+                        悄悄話
+                    </h3>
+                    <p class="text-xs text-gray-400 mt-1">匿名留言與訊息傳達板</p>
                 </div>
-                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
-                    LOCKED MISSION
+                <div class="text-right text-xs text-emerald-400 font-bold group-hover:translate-x-1 transition-transform">
+                    ENTER MISSION <i class="fa-solid fa-arrow-right ml-1"></i>
                 </div>
-            </div>
+            </a>
 
             <!-- Mission 5 -->
             <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
