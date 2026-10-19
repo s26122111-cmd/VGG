@@ -1,476 +1,417 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WEB DEV // PORTFOLIO HUB</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons for additional flair -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Share Tech Mono & VT323 for Y2K/Cyber aesthetics -->
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --neon-pink: #ff007f;
-            --neon-cyan: #00f3ff;
-            --neon-purple: #b026ff;
-            --neon-green: #00ff88;
-            --cyber-dark: #0a0a12;
-            --glass-bg: rgba(18, 18, 30, 0.65);
-            --glass-border: rgba(0, 243, 255, 0.2);
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>朋友對我的動態留言板</title>
 
-        body {
-            font-family: 'Share Tech Mono', 'Orbitron', sans-serif, monospace;
-            background-color: var(--cyber-dark);
-            color: #ffffff;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
+  <!-- Google Fonts: 導入適合中文與質感的字體 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;800&display=swap" rel="stylesheet">
 
-        /* Y2K / Cyber Grid Animated Background */
-        .cyber-bg {
-            background-image: 
-                linear-gradient(to right, rgba(0, 243, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 0, 127, 0.05) 1px, transparent 1px);
-            background-size: 40px 40px;
-            animation: gridMove 20s linear infinite;
-        }
+  <style>
+    /* =========================================================
+       1. 全局變數與基礎設定 (方便後續修改顏色)
+       ========================================================= */
+    :root {
+      /* 【顏色設定專區】 */
+      --bg-color: #fffdf5;          /* 網頁主背景色 (極淺暖黃白) */
+      --card-bg: #ffffff;          /* 卡片背景色 (純白) */
+      --primary-yellow: #fbc02d;   /* 主視覺黃色 (活力太陽黃) */
+      --accent-yellow: #fff59d;    /* 輔助亮黃色 (柔和黃) */
+      --glow-color: rgba(251, 192, 45, 0.6); /* 輪播發光顏色 (黃色半透明) */
+      
+      --text-main: #424242;        /* 主要文字顏色 (深灰，比純黑更柔和) */
+      --text-muted: #8d8d8d;       /* 次要/時間文字顏色 */
+      --border-color: #fff176;     /* 一般卡片邊框色 */
 
-        @keyframes gridMove {
-            0% { background-position: 0 0; }
-            100% { background-position: 40px 40px; }
-        }
+      /* 動畫速度 */
+      --transition-speed: 0.5s;    /* 卡片切換焦點時的平滑過渡時間 */
+    }
 
-        /* Scanline Overlay for retro CRT vibe */
-        .scanlines {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            background: linear-gradient(
-                rgba(18, 16, 16, 0) 50%, 
-                rgba(0, 0, 0, 0.25) 50%
-            );
-            background-size: 100% 4px;
-            z-index: 50;
-            opacity: 0.6;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        /* Glassmorphism Effect */
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-        }
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
 
-        /* Unlocked Cyber Mission Button Style */
-        .mission-btn {
-            position: relative;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            overflow: hidden;
-        }
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
 
-        .mission-btn-unlocked {
-            background: rgba(16, 24, 48, 0.7);
-            border: 1px solid rgba(0, 243, 255, 0.4);
-            box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
-        }
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #f57f17; /* 標題深黃色 */
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
 
-        .mission-btn-unlocked:hover {
-            transform: translateY(-4px) scale(1.02);
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.5), inset 0 0 15px rgba(0, 243, 255, 0.2);
-            color: #ffffff;
-        }
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
 
-        .mission-btn-unlocked::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.3), transparent);
-            transition: 0.5s;
-        }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
-        .mission-btn-unlocked:hover::before {
-            left: 100%;
-        }
+    /* =========================================================
+       2. 酷炫 Loading 動畫樣式
+       ========================================================= */
+    #loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 0;
+    }
 
-        /* Mission 3 Specific Purple Hover Style */
-        .mission-btn-purple {
-            border-color: rgba(176, 38, 255, 0.4);
-        }
+    .pulse-loader {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
 
-        .mission-btn-purple:hover {
-            border-color: var(--neon-purple);
-            box-shadow: 0 0 20px rgba(176, 38, 255, 0.5), inset 0 0 15px rgba(176, 38, 255, 0.2);
-        }
+    .pulse-loader div {
+      width: 18px;
+      height: 18px;
+      background-color: var(--primary-yellow);
+      border-radius: 50%;
+      animation: pulse 1.2s infinite ease-in-out;
+    }
 
-        /* Mission 4 Specific Green Hover Style */
-        .mission-btn-green {
-            border-color: rgba(0, 255, 136, 0.4);
-        }
+    .pulse-loader div:nth-child(2) { animation-delay: 0.2s; }
+    .pulse-loader div:nth-child(3) { animation-delay: 0.4s; }
 
-        .mission-btn-green:hover {
-            border-color: var(--neon-green);
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5), inset 0 0 15px rgba(0, 255, 136, 0.2);
-        }
+    @keyframes pulse {
+      0%, 80%, 100% {
+        transform: scale(0.6);
+        opacity: 0.4;
+      }
+      40% {
+        transform: scale(1.2);
+        opacity: 1;
+        box-shadow: 0 0 12px var(--primary-yellow);
+      }
+    }
 
-        /* Locked Mission Button Style */
-        .mission-btn-locked {
-            background: rgba(20, 20, 28, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #666677;
-            cursor: not-allowed;
-            filter: grayscale(80%);
-        }
+    .loading-text {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #f57f17;
+      letter-spacing: 1px;
+    }
 
-        .mission-btn-locked:hover {
-            border-color: rgba(255, 0, 127, 0.3);
-            box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
-        }
+    /* =========================================================
+       3. 瀑布流排版 (Masonry Layout)
+       ========================================================= */
+    .masonry-grid {
+      /* 使用 CSS Columns 實現瀑布流 */
+      column-count: 3;            /* 預設大螢幕顯示 3 欄 */
+      column-gap: 24px;
+      display: none;              /* 載入完成前隱藏 */
+    }
 
-        /* Cyberpunk Glitch Effect for Title */
-        .glitch-text {
-            text-shadow: 2px 2px var(--neon-pink), -2px -2px var(--neon-cyan);
-        }
+    /* 響應式調整欄數 */
+    @media (max-width: 900px) {
+      .masonry-grid { column-count: 2; }
+    }
+    @media (max-width: 600px) {
+      .masonry-grid { column-count: 1; }
+    }
 
-        /* Glow effects */
-        .avatar-glow {
-            box-shadow: 0 0 25px var(--neon-cyan), 0 0 50px var(--neon-pink);
-            animation: pulseGlow 3s infinite alternate;
-        }
+    /* =========================================================
+       4. 卡片基礎與輪播特效樣式
+       ========================================================= */
+    .card {
+      background-color: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+      break-inside: avoid;        /* 防止卡片在欄位切斷處被裁切 */
+      box-shadow: 0 4px 15px rgba(251, 192, 45, 0.08);
+      
+      /* 動畫平滑過渡屬性 */
+      transition: transform var(--transition-speed) ease,
+                  box-shadow var(--transition-speed) ease,
+                  filter var(--transition-speed) ease,
+                  opacity var(--transition-speed) ease,
+                  border-color var(--transition-speed) ease;
+      
+      position: relative;
+      cursor: pointer;
+    }
 
-        @keyframes pulseGlow {
-            0% { box-shadow: 0 0 20px rgba(0, 243, 255, 0.6), 0 0 40px rgba(255, 0, 127, 0.4); }
-            100% { box-shadow: 0 0 30px rgba(255, 0, 127, 0.8), 0 0 60px rgba(0, 243, 255, 0.5); }
-        }
-    </style>
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      border-bottom: 2px dashed #fff9c4;
+      padding-bottom: 8px;
+    }
+
+    .card-name {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #e65100; /* 姓名強調色 (暖橘黃) */
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-name::before {
+      content: "💬";
+      font-size: 0.9rem;
+    }
+
+    .card-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .card-message {
+      font-size: 0.98rem;
+      line-height: 1.6;
+      color: var(--text-main);
+      white-space: pre-wrap;     /* 保留留言內容中的換行 */
+      word-break: break-word;
+    }
+
+    /* 
+       【輪播重點特效 1】：被焦點選中的卡片高亮樣式
+    */
+    .card.highlight {
+      transform: scale(1.08);    /* 放大 1.08 倍 */
+      border-color: var(--primary-yellow);
+      box-shadow: 0 10px 30px var(--glow-color), 0 0 15px var(--accent-yellow);
+      filter: blur(0px) brightness(1.05);
+      opacity: 1;
+      z-index: 10;               /* 確保放大時壓在其他卡片上方 */
+    }
+
+    /* 
+       【輪播重點特效 2】：當有卡片被選中時，非焦點卡片變暗、變模糊
+    */
+    .masonry-grid.has-highlight .card:not(.highlight) {
+      filter: blur(2px) brightness(0.85); /* 輕微模糊並調暗 */
+      opacity: 0.6;                        /* 提高透明度 */
+      transform: scale(0.96);              /* 微微縮小 */
+    }
+  </style>
 </head>
-<body class="cyber-bg min-h-screen flex flex-col items-center justify-between p-4 sm:p-8 relative">
+<body>
 
-    <!-- CRT Scanline overlay effect -->
-    <div class="scanlines"></div>
+  <header>
+    <h1>✨ 朋友對我的動態留言板 ✨</h1>
+    <p>溫馨黃白展覽館・輪播呈現來自朋友的悄悄話</p>
+  </header>
 
-    <!-- Profile Container (Centered Header Section) -->
-    <header class="w-full max-w-4xl mx-auto text-center mt-6 mb-10 z-10">
-        <div class="glass-panel rounded-2xl p-6 sm:p-8 relative overflow-hidden backdrop-blur-md">
-            
-            <!-- Top Cyber Decorative Elements -->
-            <div class="absolute top-2 left-4 text-xs text-cyan-400 tracking-widest opacity-70">
-                [ SYS_STATUS: ONLINE ]
-            </div>
-            <div class="absolute top-2 right-4 text-xs text-pink-500 tracking-widest opacity-70">
-                [ VER: 2026.1.0 ]
-            </div>
+  <div class="container">
+    <!-- 1. 載入中動畫區塊 -->
+    <div id="loading-container">
+      <div class="pulse-loader">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <div class="loading-text">讀取留言中...</div>
+    </div>
 
-            <!-- Avatar Container -->
-            <div class="relative inline-block my-4">
-                <img 
-                    src="https://placehold.co/150x150/101428/00f3ff?text=Y2K+AVATAR" 
-                    alt="Developer Avatar" 
-                    class="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover border-2 border-cyan-400 avatar-glow mx-auto transition-transform duration-300 hover:scale-105"
-                >
-                <div class="absolute bottom-1 right-1 bg-pink-600 text-white text-xs px-2 py-0.5 rounded-full border border-white font-bold animate-pulse">
-                    LV. 04
-                </div>
-            </div>
+    <!-- 2. 留言卡片瀑布流牆 -->
+    <div id="masonry-grid" class="masonry-grid"></div>
+  </div>
 
-            <!-- User Info & Bio -->
-            <h1 class="text-3xl sm:text-5xl font-extrabold tracking-wider glitch-text uppercase mb-2">
-                <span class="text-cyan-400">&lt;</span> yy <span class="text-pink-500">&gt;</span>
-            </h1>
-            <p class="text-sm sm:text-base text-gray-300 tracking-widest max-w-lg mx-auto">
-                網頁程式設計作品集 // WEB DEVELOPMENT QUEST HUB
-            </p>
+  <script>
+    /* =========================================================
+       【參數設定區】
+       ========================================================= */
+    // Google 試算表發佈的 CSV 網址
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR7hQ1fi_1JCackidWu2wM-u2z-15oCshgqzC-GWWeAsJqDSiotEnV2zXhy6Jm-Z8cNWXljUHM0ekmK/pub?output=csv';
+    
+    // 【輪播秒數設定】這裡可以修改輪播切換的時間，目前預設為 3000毫秒 (3秒)
+    const ROTATE_INTERVAL_MS = 3000; 
 
-            <!-- Progress Bar / Mission Level -->
-            <div class="w-full max-w-xs mx-auto mt-6 bg-gray-800 rounded-full h-3 border border-gray-700 overflow-hidden relative">
-                <div class="bg-gradient-to-r from-cyan-400 via-pink-500 to-purple-500 h-full rounded-full transition-all duration-500" style="width: 25%;"></div>
-                <span class="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-white uppercase tracking-wider">
-                    Quest Progress: 4 / 16 (25.00%)
-                </span>
-            </div>
-        </div>
-    </header>
+    // 全局變數
+    let messages = [];      // 儲存解析後的留言資料
+    let currentIndex = -1;  // 當前高亮的卡片索引
+    let rotateTimer = null; // 輪播計時器
 
-    <!-- Grid Navigation Buttons Section -->
-    <main class="w-full max-w-5xl mx-auto z-10 mb-12">
-        <div class="text-center mb-6">
-            <h2 class="text-lg sm:text-xl font-bold tracking-widest text-cyan-400 uppercase inline-block border-b-2 border-pink-500 pb-1">
-                <i class="fa-solid fa-gamepad mr-2"></i>任務地圖 / SELECT MISSION
-            </h2>
-        </div>
+    /* =========================================================
+       1. CSV 解析器 (妥善處理留言內的逗號與引號)
+       ========================================================= */
+    function parseCSV(text) {
+      const lines = [];
+      // 使用正則表達式解析 CSV，能安全處理包含逗號與雙引號的欄位內容
+      const re = /(?!\s*$)\s*(?:'([^']*)'\vert{}"([^"]*)"\vert{}([^,\r\n]*))\s*(?:,\vert{}$)/g;
 
-        <!-- 16 Grid Container (Responsive: 1 col on mobile, 2 on tablet, 4 on desktop) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            
-            <!-- Button 1: Unlocked (Week 1) -->
-            <a href="w1/index.html" class="mission-btn mission-btn-unlocked rounded-xl p-4 flex flex-col justify-between group h-32 border">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold text-cyan-400 tracking-wider">WEEK 01</span>
-                    <span class="bg-cyan-500/20 text-cyan-300 text-[10px] px-2 py-0.5 rounded-full border border-cyan-400/30">
-                        <i class="fa-solid fa-unlock mr-1"></i>已解鎖
-                    </span>
-                </div>
-                <div class="my-auto">
-                    <h3 class="text-base font-bold text-white group-hover:text-cyan-300 transition-colors">
-                        數位名片
-                    </h3>
-                    <p class="text-xs text-gray-400 mt-1">個人簡介與聯絡資訊卡</p>
-                </div>
-                <div class="text-right text-xs text-cyan-400 font-bold group-hover:translate-x-1 transition-transform">
-                    ENTER MISSION <i class="fa-solid fa-arrow-right ml-1"></i>
-                </div>
-            </a>
+      // 按行切割
+      const rawLines = text.split(/\r\n|\n/);
 
-            <!-- Button 2: Unlocked (Week 2) -->
-            <a href="w2/index.html" class="mission-btn mission-btn-unlocked rounded-xl p-4 flex flex-col justify-between group h-32 border">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold text-pink-400 tracking-wider">WEEK 02</span>
-                    <span class="bg-pink-500/20 text-pink-300 text-[10px] px-2 py-0.5 rounded-full border border-pink-400/30">
-                        <i class="fa-solid fa-unlock mr-1"></i>已解鎖
-                    </span>
-                </div>
-                <div class="my-auto">
-                    <h3 class="text-base font-bold text-white group-hover:text-pink-300 transition-colors">
-                        今天吃甚麼?
-                    </h3>
-                    <p class="text-xs text-gray-400 mt-1">美食隨機抽籤與選擇器</p>
-                </div>
-                <div class="text-right text-xs text-pink-400 font-bold group-hover:translate-x-1 transition-transform">
-                    ENTER MISSION <i class="fa-solid fa-arrow-right ml-1"></i>
-                </div>
-            </a>
+      rawLines.forEach((lineText, index) => {
+        if (!lineText.trim()) return; // 忽略空行
+        
+        const row = [];
+        lineText.replace(re, (m, c1, c2, c3) => {
+          if (c1 !== undefined) row.push(c1);
+          else if (c2 !== undefined) row.push(c2);
+          else if (c3 !== undefined) row.push(c3);
+          return '';
+        });
 
-            <!-- Button 3: Unlocked (Week 3) -->
-            <a href="w3/index.html" class="mission-btn mission-btn-unlocked mission-btn-purple rounded-xl p-4 flex flex-col justify-between group h-32 border">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold text-purple-400 tracking-wider">WEEK 03</span>
-                    <span class="bg-purple-500/20 text-purple-300 text-[10px] px-2 py-0.5 rounded-full border border-purple-400/30">
-                        <i class="fa-solid fa-unlock mr-1"></i>已解鎖
-                    </span>
-                </div>
-                <div class="my-auto">
-                    <h3 class="text-base font-bold text-white group-hover:text-purple-300 transition-colors">
-                        迷因產生器
-                    </h3>
-                    <p class="text-xs text-gray-400 mt-1">熱門迷因文字與圖片產生器</p>
-                </div>
-                <div class="text-right text-xs text-purple-400 font-bold group-hover:translate-x-1 transition-transform">
-                    ENTER MISSION <i class="fa-solid fa-arrow-right ml-1"></i>
-                </div>
-            </a>
+        // 忽略第一行 (標頭：時間戳記, 名字, 悄悄話)
+        if (index > 0 && row.length >= 3) {
+          lines.push({
+            timestamp: row[0] ? row[0].trim() : '',
+            name: row[1] ? row[1].trim() : '無名氏',
+            message: row[2] ? row[2].trim() : ''
+          });
+        }
+      });
 
-            <!-- Button 4: Unlocked (Week 4) -->
-            <a href="w4/index.html" class="mission-btn mission-btn-unlocked mission-btn-green rounded-xl p-4 flex flex-col justify-between group h-32 border">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold text-emerald-400 tracking-wider">WEEK 04</span>
-                    <span class="bg-emerald-500/20 text-emerald-300 text-[10px] px-2 py-0.5 rounded-full border border-emerald-400/30">
-                        <i class="fa-solid fa-unlock mr-1"></i>已解鎖
-                    </span>
-                </div>
-                <div class="my-auto">
-                    <h3 class="text-base font-bold text-white group-hover:text-emerald-300 transition-colors">
-                        悄悄話
-                    </h3>
-                    <p class="text-xs text-gray-400 mt-1">匿名留言與訊息傳達板</p>
-                </div>
-                <div class="text-right text-xs text-emerald-400 font-bold group-hover:translate-x-1 transition-transform">
-                    ENTER MISSION <i class="fa-solid fa-arrow-right ml-1"></i>
-                </div>
-            </a>
+      return lines;
+    }
 
-            <!-- Mission 5 -->
-            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 05</span>
-                    <span class="text-xs">🔒</span>
-                </div>
-                <div class="my-auto">
-                    <h3 class="text-base font-bold text-gray-400">Week 5 - 尚未解鎖</h3>
-                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
-                </div>
-                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
-                    LOCKED MISSION
-                </div>
-            </div>
+    /* =========================================================
+       2. 資料讀取 (fetch API)
+       ========================================================= */
+    async function fetchMessages() {
+      try {
+        const response = await fetch(CSV_URL);
+        if (!response.ok) throw new Error('網路回應不成功');
+        
+        const csvData = await response.text();
+        messages = parseCSV(csvData);
 
-            <!-- Mission 6 -->
-            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 06</span>
-                    <span class="text-xs">🔒</span>
-                </div>
-                <div class="my-auto">
-                    <h3 class="text-base font-bold text-gray-400">Week 6 - 尚未解鎖</h3>
-                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
-                </div>
-                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
-                    LOCKED MISSION
-                </div>
-            </div>
+        // 隱藏 Loading 動畫，顯示瀑布流容器
+        document.getElementById('loading-container').style.display = 'none';
+        const grid = document.getElementById('masonry-grid');
+        grid.style.display = 'block';
 
-            <!-- Mission 7 -->
-            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 07</span>
-                    <span class="text-xs">🔒</span>
-                </div>
-                <div class="my-auto">
-                    <h3 class="text-base font-bold text-gray-400">Week 7 - 尚未解鎖</h3>
-                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
-                </div>
-                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
-                    LOCKED MISSION
-                </div>
-            </div>
+        if (messages.length === 0) {
+          grid.innerHTML = '<p style="text-align:center; width:100%;">目前還沒有任何留言喔！</p>';
+          return;
+        }
 
-            <!-- Mission 8 -->
-            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 08</span>
-                    <span class="text-xs">🔒</span>
-                </div>
-                <div class="my-auto">
-                    <h3 class="text-base font-bold text-gray-400">Week 8 - 尚未解鎖</h3>
-                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
-                </div>
-                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
-                    LOCKED MISSION
-                </div>
-            </div>
+        // 動態繪製卡片
+        renderCards(messages);
 
-            <!-- Mission 9 -->
-            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 09</span>
-                    <span class="text-xs">🔒</span>
-                </div>
-                <div class="my-auto">
-                    <h3 class="text-base font-bold text-gray-400">Week 9 - 尚未解鎖</h3>
-                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
-                </div>
-                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
-                    LOCKED MISSION
-                </div>
-            </div>
+        // 啟動自動輪播特效
+        startCarousel();
 
-            <!-- Mission 10 -->
-            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 10</span>
-                    <span class="text-xs">🔒</span>
-                </div>
-                <div class="my-auto">
-                    <h3 class="text-base font-bold text-gray-400">Week 10 - 尚未解鎖</h3>
-                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
-                </div>
-                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
-                    LOCKED MISSION
-                </div>
-            </div>
+      } catch (error) {
+        console.error('讀取 CSV 失敗:', error);
+        document.getElementById('loading-container').innerHTML = `
+          <div class="loading-text" style="color: #d32f2f;">載入留言失敗，請稍後重試。</div>
+        `;
+      }
+    }
 
-            <!-- Mission 11 -->
-            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 11</span>
-                    <span class="text-xs">🔒</span>
-                </div>
-                <div class="my-auto">
-                    <h3 class="text-base font-bold text-gray-400">Week 11 - 尚未解鎖</h3>
-                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
-                </div>
-                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
-                    LOCKED MISSION
-                </div>
-            </div>
+    /* =========================================================
+       3. 動態生成卡片 DOM
+       ========================================================= */
+    function renderCards(dataList) {
+      const grid = document.getElementById('masonry-grid');
+      grid.innerHTML = ''; // 清空內容
 
-            <!-- Mission 12 -->
-            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 12</span>
-                    <span class="text-xs">🔒</span>
-                </div>
-                <div class="my-auto">
-                    <h3 class="text-base font-bold text-gray-400">Week 12 - 尚未解鎖</h3>
-                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
-                </div>
-                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
-                    LOCKED MISSION
-                </div>
-            </div>
+      dataList.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.index = idx; // 註記索引方便存取
 
-            <!-- Mission 13 -->
-            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 13</span>
-                    <span class="text-xs">🔒</span>
-                </div>
-                <div class="my-auto">
-                    <h3 class="text-base font-bold text-gray-400">Week 13 - 尚未解鎖</h3>
-                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
-                </div>
-                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
-                    LOCKED MISSION
-                </div>
-            </div>
+        // 組合卡片內部 HTML
+        card.innerHTML = `
+          <div class="card-header">
+            <span class="card-name">${escapeHTML(item.name)}</span>
+            <span class="card-time">${escapeHTML(item.timestamp)}</span>
+          </div>
+          <div class="card-message">${escapeHTML(item.message)}</div>
+        `;
 
-            <!-- Mission 14 -->
-            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 14</span>
-                    <span class="text-xs">🔒</span>
-                </div>
-                <div class="my-auto">
-                    <h3 class="text-base font-bold text-gray-400">Week 14 - 尚未解鎖</h3>
-                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
-                </div>
-                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
-                    LOCKED MISSION
-                </div>
-            </div>
+        // 點擊卡片時，也可以手動切換焦點至該卡片
+        card.addEventListener('click', () => {
+          highlightCard(idx);
+          resetTimer(); // 重新計算 3 秒
+        });
 
-            <!-- Mission 15 -->
-            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 15</span>
-                    <span class="text-xs">🔒</span>
-                </div>
-                <div class="my-auto">
-                    <h3 class="text-base font-bold text-gray-400">Week 15 - 尚未解鎖</h3>
-                    <p class="text-xs text-gray-600 mt-1">任務鎖定中...</p>
-                </div>
-                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
-                    LOCKED MISSION
-                </div>
-            </div>
+        grid.appendChild(card);
+      });
+    }
 
-            <!-- Mission 16 -->
-            <div class="mission-btn mission-btn-locked rounded-xl p-4 flex flex-col justify-between h-32 select-none">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold text-gray-500 tracking-wider">WEEK 16</span>
-                    <span class="text-xs">🔒</span>
-                </div>
-                <div class="my-auto">
-                    <h3 class="text-base font-bold text-gray-400">Week 16 - 期末專題</h3>
-                    <p class="text-xs text-gray-600 mt-1">終極關卡鎖定中...</p>
-                </div>
-                <div class="text-right text-[10px] text-gray-600 uppercase tracking-widest">
-                    LOCKED MISSION
-                </div>
-            </div>
+    /* =========================================================
+       4. 隨時間輪播特效 (Highlight 邏輯)
+       ========================================================= */
+    function highlightCard(index) {
+      const cards = document.querySelectorAll('.card');
+      const grid = document.getElementById('masonry-grid');
 
-        </div>
-    </main>
+      if (cards.length === 0) return;
 
-    <!-- Footer Section -->
-    <footer class="w-full text-center text-xs text-gray-500 z-10 py-4">
-        <p class="tracking-widest">© 2026 WEB PROGRAMMING COURSE // DESIGNED WITH Y2K CYBER AESTHETIC</p>
-    </footer>
+      // 移除舊卡片的高亮
+      cards.forEach(c => c.classList.remove('highlight'));
 
+      // 設定當前高亮卡片
+      currentIndex = index;
+      const targetCard = cards[currentIndex];
+
+      if (targetCard) {
+        grid.classList.add('has-highlight'); // 讓其他卡片觸發暗化模糊樣式
+        targetCard.classList.add('highlight');
+
+        // 平滑滾動確保焦點卡片儘量在可視範圍內 (選配優化體驗)
+        targetCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    // 切換至下一張卡片
+    function nextCard() {
+      if (messages.length === 0) return;
+      const nextIdx = (currentIndex + 1) % messages.length;
+      highlightCard(nextIdx);
+    }
+
+    // 開啟計時器
+    function startCarousel() {
+      // 載入後先高亮第一張
+      highlightCard(0);
+      
+      // 設定固定時間間隔輪播 (依據 ROTATE_INTERVAL_MS 變數)
+      rotateTimer = setInterval(nextCard, ROTATE_INTERVAL_MS);
+    }
+
+    // 重置計時器 (當使用者手動點擊卡片時觸發)
+    function resetTimer() {
+      if (rotateTimer) clearInterval(rotateTimer);
+      rotateTimer = setInterval(nextCard, ROTATE_INTERVAL_MS);
+    }
+
+    /* =========================================================
+       5. 輔助功能: XSS 防範 (字串轉義)
+       ========================================================= */
+    function escapeHTML(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // 初始化執行
+    window.addEventListener('DOMContentLoaded', fetchMessages);
+  </script>
 </body>
 </html>
